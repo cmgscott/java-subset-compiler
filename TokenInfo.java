@@ -11,27 +11,35 @@ package jminusminus;
  */
 
 enum TokenKind {
-    EOF("<EOF>"), ABSTRACT("abstract"), /** added **/ ASSERT("assert"), BOOLEAN("boolean"), 
-            /** added **/ BREAK("break"), /** added **/ BYTE("byte"), /** added **/ CASE("case"), CHAR("char"), CLASS(
-            "class"), /** added **/ CONST("const"), /** added **/ CONTINUE("continue"), 
-            /** added **/ DEFAULT("default"),  /** added **/ DOUBLE("double"), /** added **/ DO("do"), ELSE("else"), 
-            /** added **/ ENUM("enum"), 
-            EXTENDS("extends"), FALSE("false"), /** added **/ FINAL("final"), /** added **/ FINALLY("finally"), 
-            /** added **/ FLOAT("float"), /** added **/ FOR("for"), /** added **/ GOTO("goto"), IF("if"), 
-            /** added **/ IMPLEMENTS("implements"), IMPORT("import"), INSTANCEOF("instanceof"), INT("int"), 
-            /** added **/ INTERFACE("interface"), /** added **/ LONG("long"), /** added **/ NATIVE("native"), 
+    EOF("<EOF>"), ABSTRACT("abstract"), /* added */ ASSERT("assert"), BOOLEAN("boolean"), 
+            /* added */ BREAK("break"), /* added */ BYTE("byte"), /* added */ CASE("case"), CHAR("char"), CLASS(
+            "class"), /* added */ CONST("const"), /* added */ CONTINUE("continue"), 
+            /* added */ DEFAULT("default"),  /* added */ DOUBLE("double"), /* added */ DO("do"), ELSE("else"), 
+            /* added */ ENUM("enum"), 
+            EXTENDS("extends"), FALSE("false"), /* added */ FINAL("final"), /* added */ FINALLY("finally"), 
+            /* added */ FLOAT("float"), /* added */ FOR("for"), /* added */ GOTO("goto"), IF("if"), 
+            /* added */ IMPLEMENTS("implements"), IMPORT("import"), INSTANCEOF("instanceof"), INT("int"), 
+            /* added */ INTERFACE("interface"), /* added */ LONG("long"), /* added */ NATIVE("native"), 
             NEW("new"), NULL("null"), PACKAGE("package"), PRIVATE("private"), PROTECTED("protected"), 
-            PUBLIC("public"), RETURN("return"), /** added **/ SHORT("short"), STATIC("static"), 
-            /** added **/ STRICTFP("strictfp"), SUPER("super"), /** added **/ SWITCH("switch"), 
-            /** added **/ SYNCHRONIZED("synchronized"), THIS("this"), /** added **/ THROW("throw"), 
-            /** added **/THROWS("throws"), /** added **/ TRANSIENT("transient"), TRUE("true"), 
-            /** added **/ TRY("try"), VOID("void"), /** added **/ VOLATILE("volatile"), WHILE("while"), PLUS(
-            "+"), ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND(
-            "&&"), LE("<="), LNOT("!"), MINUS("-"), PLUS_ASSIGN("+="), STAR("*"), LPAREN(
+            PUBLIC("public"), RETURN("return"), /* added */ SHORT("short"), STATIC("static"), 
+            /* added */ STRICTFP("strictfp"), SUPER("super"), /* added */ SWITCH("switch"), 
+            /* added */ SYNCHRONIZED("synchronized"), THIS("this"), /* added */ THROW("throw"), 
+            /* added */THROWS("throws"), /* added */ TRANSIENT("transient"), TRUE("true"), 
+            /* added */ TRY("try"), VOID("void"), /* added */ VOLATILE("volatile"), WHILE("while"), PLUS(
+            "+"), ASSIGN("="), DEC("--"), EQUAL("=="), /* added */ GE(">="), GT(">"), INC("++"), LAND(
+            "&&"), LE("<="), LNOT("!"), /* added */ LT("<"), MINUS("-"), PLUS_ASSIGN("+="), STAR("*"), LPAREN(
             "("), RPAREN(")"), LCURLY("{"), RCURLY("}"), LBRACK("["), RBRACK(
-            "]"), SEMI(";"), COMMA(","), DOT("."), IDENTIFIER("<IDENTIFIER>"), INT_LITERAL(
-            "<INT_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"), STRING_LITERAL(
-            "<STRING_LITERAL>");
+            "]"), SEMI(";"), COMMA(","), DOT("."), IDENTIFIER("<IDENTIFIER>"), 
+            /* added */ DOUBLE_LITERAL("<DOUBLE_LITERAL>"), INT_LITERAL(
+            "<INT_LITERAL>"), /* added */ FLOAT_LITERAL("<FLOAT_LITERAL>"), /* added */ LONG_LITERAL("<LONG_LITERAL>"), CHAR_LITERAL("<CHAR_LITERAL>"), STRING_LITERAL(
+            "<STRING_LITERAL>"), /* added */ OCTAL_LITERAL("<OCTAL_LITERAL>"), 
+            /** all after here were added **/ /*PLUS_POSTFIX("++"), 
+            MINUS_POSTFIX("--"), PLUS_PLUS_UNARY("++, MINUS_MINUS_UNARY, 
+            PLUS_UNARY, MINUS_UNARY,*/ TILDE("~"), MOD("%"), 
+            SIGNED_LEFT_SHIFT("<<"), SIGNED_RIGHT_SHIFT(">>"), 
+            UNSIGNED_RIGHT_SHIFT(">>>"), DIV("/"), NOT_EQ("!="), BIT_AND("&"), 
+            BIT_EX_OR("^"), BIT_IN_OR("|"), LOGICAL_OR("||"), 
+            QUEST_TERNARY("?"), SOL_TERNARY(":");
 
     /** The token's string representation. */
     private String image;

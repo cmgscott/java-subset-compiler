@@ -39,6 +39,9 @@ class Scanner {
 
     /** Line number of current token. */
     private int line;
+    
+    /** literal keywords in j-- **/
+    private Hashtable<String, TokenKind> literals;
 
     /**
      * Construct a Scanner object.
@@ -80,6 +83,35 @@ class Scanner {
         reserved.put(TRUE.image(), TRUE);
         reserved.put(VOID.image(), VOID);
         reserved.put(WHILE.image(), WHILE);
+        // ADDED
+        reserved.put(ASSERT.image(), ASSERT);
+        reserved.put(BREAK.image(), BREAK);
+        reserved.put(BYTE.image(), BYTE);
+        reserved.put(CASE.image(), CASE);
+        reserved.put(CONST.image(), CONST);
+        reserved.put(CONTINUE.image(), CONTINUE);
+        reserved.put(DEFAULT.image(), DEFAULT);
+        reserved.put(DOUBLE.image(), DOUBLE);
+        reserved.put(DO.image(), DO);
+        reserved.put(ENUM.image(), ENUM);
+        reserved.put(FINAL.image(), FINAL);
+        reserved.put(FINALLY.image(), FINALLY);
+        reserved.put(FLOAT.image(), FLOAT);
+        reserved.put(FOR.image(), FOR);
+        reserved.put(GOTO.image(), GOTO);
+        reserved.put(IMPLEMENTS.image(), IMPLEMENTS);
+        reserved.put(INTERFACE.image(), INTERFACE);
+        reserved.put(LONG.image(), LONG);
+        reserved.put(NATIVE.image(), NATIVE);
+        reserved.put(SHORT.image(), SHORT);
+        reserved.put(STRICTFP.image(), STRICTFP);
+        reserved.put(SWITCH.image(), SWITCH);
+        reserved.put(SYNCHRONIZED.image(), SYNCHRONIZED);
+        reserved.put(THROW.image(), THROW);
+        reserved.put(THROWS.image(), THROWS);
+        reserved.put(TRANSIENT.image(), TRANSIENT);
+        reserved.put(TRY.image(), TRY);
+        reserved.put(VOLATILE.image(), VOLATILE);
 
         // Prime the pump.
         nextCh();
@@ -126,6 +158,33 @@ class Scanner {
         }
         line = input.line();
         switch (ch) {
+        /* start added */
+        case '~':
+        	nextCh();
+        	return new TokenInfo(TILDE, line);
+        case '%':
+        	nextCh();
+        	return new TokenInfo(MOD, line);
+        case '/':
+        	nextCh();
+        	return new TokenInfo(DIV, line);
+        case '^':
+        	nextCh();
+        	return new TokenInfo(BIT_EX_OR, line);
+        case '|':
+        	nextCh();
+        	if (ch == '|') {
+        		nextCh();
+        		return new TokenInfo(LOGICAL_OR, line);
+        	}
+        	return new TokenInfo(BIT_IN_OR, line);
+        case '?':
+        	nextCh();
+        	return new TokenInfo(QUEST_TERNARY, line);
+        case ':':
+        	nextCh();
+        	return new TokenInfo(SOL_TERNARY, line);
+        /* end added */
         case '(':
             nextCh();
             return new TokenInfo(LPAREN, line);
@@ -160,6 +219,10 @@ class Scanner {
             }
         case '!':
             nextCh();
+            if (ch == '=') {
+            	nextCh();
+            	return new TokenInfo(NOT_EQ, line);
+            }
             return new TokenInfo(LNOT, line);
         case '*':
             nextCh();
@@ -189,20 +252,34 @@ class Scanner {
                 nextCh();
                 return new TokenInfo(LAND, line);
             } else {
-                reportScannerError("Operator & is not supported in j--.");
-                return getNextToken();
+                nextCh();
+                return new TokenInfo(BIT_AND, line);
             }
         case '>':
             nextCh();
+            if (ch == '>') {
+            	nextCh();
+            	if (ch == '>') {
+            		nextCh();
+            		return new TokenInfo(UNSIGNED_RIGHT_SHIFT, line);
+            	}
+            	return new TokenInfo(SIGNED_RIGHT_SHIFT, line);
+            } else if (ch == '=') {
+            	nextCh();
+            	return new TokenInfo(GE, line);
+            }
             return new TokenInfo(GT, line);
         case '<':
             nextCh();
             if (ch == '=') {
                 nextCh();
                 return new TokenInfo(LE, line);
+            } else if (ch == '<') {
+            	nextCh();
+            	return new TokenInfo(SIGNED_LEFT_SHIFT, line);
             } else {
-                reportScannerError("Operator < is not supported in j--.");
-                return getNextToken();
+                nextCh();
+                return new TokenInfo(LT, line);
             }
         case '\'':
             buffer = new StringBuffer();
@@ -258,8 +335,25 @@ class Scanner {
         case EOFCH:
             return new TokenInfo(EOF, line);
         case '0':
-            // Handle only simple decimal integers for now.
+            buffer = new StringBuffer();
             nextCh();
+            /* double added (10/06/18) */
+            if (ch == '.') {
+                if (ch == '.') {
+                	buffer.append(ch);
+                	nextCh();
+                	while (isDigit(ch)) {
+                	    buffer.append(ch);
+                	    nextCh();
+                	}
+                	if (ch == 'f' || ch == 'F') {
+                		return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
+                	} else if (ch == 'l' || ch == 'L') {
+                		return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
+                	}
+                	return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                }
+            }
             return new TokenInfo(INT_LITERAL, "0", line);
         case '1':
         case '2':
@@ -274,6 +368,21 @@ class Scanner {
             while (isDigit(ch)) {
                 buffer.append(ch);
                 nextCh();
+                /* double added (10/06/18) */
+                if (ch == '.') {
+                	buffer.append(ch);
+                	nextCh();
+                	while (isDigit(ch)) {
+                	    buffer.append(ch);
+                	    nextCh();
+                	}
+                	if (ch == 'f' || ch == 'F') {
+                		return new TokenInfo(FLOAT_LITERAL, buffer.toString(), line);
+                	} else if (ch == 'l' || ch == 'L') {
+                		return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
+                	}
+                	return new TokenInfo(DOUBLE_LITERAL, buffer.toString(), line);
+                }
             }
             return new TokenInfo(INT_LITERAL, buffer.toString(), line);
         default:
@@ -286,6 +395,12 @@ class Scanner {
                 String identifier = buffer.toString();
                 if (reserved.containsKey(identifier)) {
                     return new TokenInfo(reserved.get(identifier), line);
+                } else if (identifier.equals("null")) { // identify literals
+                	return new TokenInfo(NULL, line);   // added 10/06/18
+                } else if (identifier.equals("true")) { 
+                	return new TokenInfo(TRUE, line);
+                } else if (identifier.equals("false")) {
+                	return new TokenInfo(FALSE, line); // end add literals
                 } else {
                     return new TokenInfo(IDENTIFIER, identifier, line);
                 }
